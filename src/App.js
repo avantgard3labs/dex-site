@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import './App.css';
 import contractJson from './contracts/ERC20Factory.json';
 import erc20Json from './contracts/ERC20.json';
+import mintableJson from './contracts/ERC20Mintable.json';
 
 function App() {
 
@@ -15,6 +16,8 @@ function App() {
   const [token2Balance, settoken2Balance] = useState("")
   const [token1, setToken1] = useState()
   const [token2, setToken2] = useState()
+  const [inputMint1, setInputMint1] = useState('');
+  const [inputMint2, setInputMint2] = useState('');
 
 
   
@@ -37,18 +40,52 @@ function App() {
   }
 
   async function tokenBalance() {
-    const token1 = new ethers.Contract(token1Address, erc20Json.abi, signer);
-    setToken1(token1)
-    const token1Bal = await token1.balanceOf(walletAddress);
-    const token1Balance = ethers.utils.formatEther(token1Bal) * 1e18;
-    settoken1Balance(token1Balance)
-    const token2 = new ethers.Contract(token2Address, erc20Json.abi, signer);
-    setToken2(token2)
-    const token2Bal = await token2.balanceOf(walletAddress);
-    const token2Balance = ethers.utils.formatEther(token2Bal) * 1e18;
-    settoken2Balance(token2Balance)
-  }
     
+    //Token1
+    const token1 = new ethers.Contract(token1Address, erc20Json.abi, signer)
+    setToken1(token1)
+    const token1Bal = await token1.balanceOf(walletAddress)
+    const token1Balance = ethers.utils.formatEther(token1Bal)
+    const balanceWithoutDecimals1 = parseFloat(token1Balance).toFixed(0)
+    settoken1Balance(balanceWithoutDecimals1)
+    
+    //Token2
+    const token2 = new ethers.Contract(token2Address, erc20Json.abi, signer)
+    setToken2(token2)
+    const token2Bal = await token2.balanceOf(walletAddress)
+    const token2Balance = ethers.utils.formatEther(token2Bal)
+    const balanceWithoutDecimals2 = parseFloat(token2Balance).toFixed(0)
+    settoken2Balance(balanceWithoutDecimals2)
+  }
+
+  
+  //Mint token1
+  function handleChange1(event) {
+    setInputMint1(event.target.value);
+  }
+  function handleSubmit1() {
+    mintToken1(inputMint1);
+  }
+  async function mintToken1() {
+    const token1Mint =new ethers.Contract(token1Address,mintableJson.abi, signer)
+    const inputMint1InWei = ethers.utils.parseUnits(inputMint1);
+    await token1Mint.mint(walletAddress, inputMint1InWei);
+  }
+
+  //Mint token2
+  function handleChange2(event) {
+    setInputMint2(event.target.value);
+  }
+  function handleSubmit2() {
+    mintToken2(inputMint2);
+  }
+  async function mintToken2() {
+    const token2Mint =new ethers.Contract(token2Address,mintableJson.abi, signer)
+    const inputMint2InWei = ethers.utils.parseUnits(inputMint2);
+    await token2Mint.mint(walletAddress, inputMint2InWei);
+  }
+  
+
   return (
     <div className='Wallet'>
       <div className='wallet'>
@@ -61,7 +98,18 @@ function App() {
         <h4>TK1 Balance: {token1Balance}</h4>
         <h4>TK2 Balance: {token2Balance}</h4>
       </div>
-       
+      <div className='mint'> 
+        <h3>To mint tokens:</h3>
+        
+        <h4>Token1</h4>
+        <input type="text" value={inputMint1} onChange={handleChange1}/>
+        <button onClick={handleSubmit1}>Mint</button>
+
+        <h4>Token1</h4>
+        <input type="text" value={inputMint2} onChange={handleChange2}/>
+        <button onClick={handleSubmit2}>Mint</button>
+
+      </div>
     </div>
   );
 }
