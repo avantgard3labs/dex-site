@@ -4,6 +4,7 @@ import './App.css';
 import contractJson from './contracts/ERC20Factory.json';
 import erc20Json from './contracts/ERC20.json';
 import mintableJson from './contracts/ERC20Mintable.json';
+import cpammJson from './contracts/CPAMM.json';
 
 function App() {
 
@@ -18,10 +19,11 @@ function App() {
   const [token2, setToken2] = useState()
   const [inputMint1, setInputMint1] = useState('');
   const [inputMint2, setInputMint2] = useState('');
+  const [CPAMMContract, setCPAMMContract] = useState()
 
 
-  
-  
+
+
   async function connectWallet() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const accounts = await window.ethereum.request({method:"eth_requestAccounts"})
@@ -36,7 +38,11 @@ function App() {
     const token2Address = await contract.getAddressForSymbol("TK2")
     settoken1Address(token1Address)
     settoken2Address(token2Address)
-    
+
+    //CPAMM contract connection
+    const contractCPAMMAdd = "0x39BEDc6d570B542B3B044e59C3d544F9D6C8AD22"
+    const contractCPAMM = new ethers.Contract(contractCPAMMAdd, cpammJson.abi, signer, token1Address, token2Address)
+    setCPAMMContract(contractCPAMM)
   }
 
   async function tokenBalance() {
@@ -84,6 +90,9 @@ function App() {
     const inputMint2InWei = ethers.utils.parseUnits(inputMint2);
     await token2Mint.mint(walletAddress, inputMint2InWei);
   }
+
+
+  
   
 
   return (
@@ -91,12 +100,6 @@ function App() {
       <div className='wallet'>
         <button onClick={connectWallet}>Connect Wallet</button>
         <h3>Address: {walletAddress}</h3>
-      </div>
-      <div className='token'> 
-        <button onClick={tokenBalance}>Balance</button>
-        <h3>The current token balance in your account are:</h3>
-        <h4>TK1 Balance: {token1Balance}</h4>
-        <h4>TK2 Balance: {token2Balance}</h4>
       </div>
       <div className='mint'> 
         <h3>To mint tokens:</h3>
@@ -110,6 +113,13 @@ function App() {
         <button onClick={handleSubmit2}>Mint</button>
 
       </div>
+      <div className='token'> 
+        <button onClick={tokenBalance}>Balance</button>
+        <h3>The current token balance in your account are:</h3>
+        <h4>TK1 Balance: {token1Balance}</h4>
+        <h4>TK2 Balance: {token2Balance}</h4>
+      </div>
+      
     </div>
   );
 }
