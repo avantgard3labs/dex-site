@@ -26,3 +26,14 @@
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
+.addLiq {
+    text-align: center;
+    width: auto;
+    height: auto;
+    border: 2px solid #000000;
+    background: #e8d1ee;
+    margin: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

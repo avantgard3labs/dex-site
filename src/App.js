@@ -8,18 +8,25 @@ import cpammJson from './contracts/CPAMM.json';
 
 function App() {
 
+  //wallet and contracts
   const [walletAddress, setWalletAddress] = useState("")
   const [signer, setSigner] = useState()
   const [contract, setContract] = useState()
+  const [CPAMMContract, setCPAMMContract] = useState()
+  //token
   const [token1Address, settoken1Address] = useState("")
   const [token2Address, settoken2Address] = useState("")
   const [token1Balance, settoken1Balance] = useState("")
   const [token2Balance, settoken2Balance] = useState("")
   const [token1, setToken1] = useState()
   const [token2, setToken2] = useState()
+  //MINT
   const [inputMint1, setInputMint1] = useState('');
   const [inputMint2, setInputMint2] = useState('');
-  const [CPAMMContract, setCPAMMContract] = useState()
+  //ADDLiquidity
+  const [liq1, setLiq1] = useState('')
+  const [liq2, setLiq2] = useState('')
+
 
 
 
@@ -83,7 +90,7 @@ function App() {
     setInputMint2(event.target.value);
   }
   function handleSubmit2() {
-    mintToken2(inputMint2);
+    mintToken2();
   }
   async function mintToken2() {
     const token2Mint =new ethers.Contract(token2Address,mintableJson.abi, signer)
@@ -92,6 +99,23 @@ function App() {
   }
 
 
+  //Add liquidity
+  function InputAddLiq1(event) {
+    setLiq1(event.target.value);
+  }
+
+  function InputAddLiq2(event) {
+    setLiq2(event.target.value);
+  }
+
+  function submitAddLiq(event) {
+    event.preventDefault();
+    addLiquidty();
+  }
+
+  function addLiquidty() {
+    
+  }
   
   
 
@@ -108,7 +132,7 @@ function App() {
         <input type="text" value={inputMint1} onChange={handleChange1}/>
         <button onClick={handleSubmit1}>Mint</button>
 
-        <h4>Token1</h4>
+        <h4>Token2</h4>
         <input type="text" value={inputMint2} onChange={handleChange2}/>
         <button onClick={handleSubmit2}>Mint</button>
 
@@ -118,6 +142,21 @@ function App() {
         <h3>The current token balance in your account are:</h3>
         <h4>TK1 Balance: {token1Balance}</h4>
         <h4>TK2 Balance: {token2Balance}</h4>
+      </div>
+      
+      <div className='addLiq'> 
+          <h3>Add Liquidity</h3>
+          <form onSubmit={submitAddLiq}>
+            <h4>Token1 Amount:</h4>
+            <input type="text" value={liq1} onChange={InputAddLiq1} />
+          <br/><br/>
+            
+            <h4>Token2 Amount:</h4>
+            <input type="text" value={liq2} onChange={InputAddLiq2} />
+          <br/><br/>
+          
+          <button type="submit">Submit</button>
+          </form>
       </div>
       
     </div>
