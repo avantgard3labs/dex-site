@@ -29,7 +29,11 @@ function App() {
   //ADDLiquidity
   const [liq1, setLiq1] = useState('')
   const [liq2, setLiq2] = useState('')
-
+  //Swap
+  const [swap1, setSwap1] = useState('');
+  const [swap2, setSwap2] = useState('');
+  //RemoveLiquidity
+  const [removeLiq,setRemoveLiq] = useState('');
 
 
 
@@ -77,7 +81,7 @@ function App() {
     setInputMint1(event.target.value);
   }
   function handleSubmit1() {
-    mintToken1(inputMint1);
+    mintToken1();
   }
   async function mintToken1() {
     const token1Mint =new ethers.Contract(token1Address,mintableJson.abi, signer)
@@ -99,29 +103,62 @@ function App() {
   }
 
 
-  //Add liquidity
-  // function InputAddLiq1(event) {
-  //   setLiq1(event.target.value);
-  // }
-  // function InputAddLiq2(event) {
-  //   setLiq2(event.target.value);
-  // }
-  // function submitAddLiq(event) {
-  //   event.preventDefault();
-  //   addLiquid();
-  // }
+  // Add liquidity
+  function InputAddLiq1(event) {
+    setLiq1(event.target.value);
+  }
+  function InputAddLiq2(event) {
+    setLiq2(event.target.value);
+  }
+  function submitAddLiq(event) {
+    event.preventDefault();
+    addLiquid();
+  }
 
-  // async function addLiquid() {
-  //   const liq1Format = ethers.utils.parseUnits(liq1);
-  //   const liq2Format = ethers.utils.parseUnits(liq2);
-  //   await token1.approve(contractCPAMMAdd,liq1Format)
-  //   await token2.approve(contractCPAMMAdd,liq2Format)
-  //   await CPAMMContract.addLiquidity(liq1Format,liq2Format)
-    
+  async function addLiquid() {
+    const liq1Format = ethers.utils.parseUnits(liq1);
+    const liq2Format = ethers.utils.parseUnits(liq2);
+    await token1.approve(contractCPAMMAdd,liq1Format)
+    await token2.approve(contractCPAMMAdd,liq2Format)
+    await CPAMMContract.addLiquidity(liq1Format,liq2Format)
 
-  // }
+  }
   
+  //Swap token1
+  function swapChange1(event) {
+    setSwap1(event.target.value);
+  }
+  function swapSubmit1() {
+    swapToken1();
+  }
+  async function swapToken1() {
+    await CPAMMContract.swap(token1Address,swap1)
+  }
+
+  //Swap token2
+  function swapChange2(event) {
+    setSwap2(event.target.value);
+  }
+  function swapSubmit2() {
+    swapToken2();
+  }
+  async function swapToken2() {
+    await CPAMMContract.swap(token2Address,swap2)
+  }
   
+
+  //removeLiquidity
+  function removeChange(event) {
+    setRemoveLiq(event.target.value);
+  }
+  function removeSubmit() {
+    removeLiquidity();
+  }
+  async function removeLiquidity() {
+    await CPAMMContract.removeLiquidity(removeLiq)
+  }
+
+
 
   return (
     <div className='Wallet'>
@@ -141,6 +178,7 @@ function App() {
         <button onClick={handleSubmit2}>Mint</button>
 
       </div>
+      
       <div className='token'> 
         <button onClick={tokenBalance}>Balance</button>
         <h3>The current token balance in your account are:</h3>
@@ -148,7 +186,7 @@ function App() {
         <h4>TK2 Balance: {token2Balance}</h4>
       </div>
       
-      {/* <div className='addLiq'> 
+      <div className='addLiq'> 
           <h3>Add Liquidity</h3>
           <form onSubmit={submitAddLiq}>
             <h4>Token1 Amount:</h4>
@@ -161,10 +199,30 @@ function App() {
           
           <button type="submit">Submit</button>
           </form>
-      </div> */}
+      </div>
+
+      <div className='swap'> 
+        <h3>To Swap tokens:</h3>
+        
+        <h4>Token1 to Token2</h4>
+        <input type="text" value={swap1} onChange={swapChange1} placeholder="Amount in Token1" />
+        <button onClick={swapSubmit1}>Swap to Token2</button>
+
+        <h4>Token2 to Token1</h4>
+        <input type="text" value={swap2} onChange={swapChange2} placeholder="Amount in Token2"/>
+        <button onClick={swapSubmit2}>Swap to Token1</button>
+
+      </div>
+      <div className='remove'> 
+        <h3>To Remove Liquidity:</h3>
+        
+        <input type="text" value={removeLiq} onChange={removeChange} placeholder="Enter the shares"/>
+        <button onClick={removeSubmit}>Remove</button>
+      </div>
+      
       
     </div>
   );
-}
+} 
 
 export default App;

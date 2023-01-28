@@ -37,3 +37,25 @@
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
+.swap {
+    text-align: center;
+    width: auto;
+    height: auto;
+    border: 2px solid #000000;
+    background: #e3fabb;
+    margin: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.remove {
+    text-align: center;
+    width: auto;
+    height: auto;
+    border: 2px solid #000000;
+    background: #c6c4e8;
+    margin: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
