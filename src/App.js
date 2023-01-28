@@ -8,6 +8,9 @@ import cpammJson from './contracts/CPAMM.json';
 
 function App() {
 
+  //Address
+  const contractAddress="0x1Fb1173a01c4B41074B623c498B22cD33Ef3a5Ce"
+  const contractCPAMMAdd = "0xF2d45bC4D63327ada53Fb743Ae16c9a59714f054"
   //wallet and contracts
   const [walletAddress, setWalletAddress] = useState("")
   const [signer, setSigner] = useState()
@@ -36,20 +39,19 @@ function App() {
     const accounts = await window.ethereum.request({method:"eth_requestAccounts"})
     await setWalletAddress(accounts[0])
     const signer = provider.getSigner();
-    setSigner(signer);
+    await setSigner(signer);
 
-    const contractAddress="0x0e2F3f475800302C6b024669009eDb1F58f44f93"
+    
     const contract = new ethers.Contract(contractAddress,contractJson.abi,signer)
-    setContract(contract)
+    await setContract(contract)
     const token1Address = await contract.getAddressForSymbol("TK1")
     const token2Address = await contract.getAddressForSymbol("TK2")
-    settoken1Address(token1Address)
-    settoken2Address(token2Address)
+    await settoken1Address(token1Address)
+    await settoken2Address(token2Address)
 
     //CPAMM contract connection
-    const contractCPAMMAdd = "0x39BEDc6d570B542B3B044e59C3d544F9D6C8AD22"
     const contractCPAMM = new ethers.Contract(contractCPAMMAdd, cpammJson.abi, signer, token1Address, token2Address)
-    setCPAMMContract(contractCPAMM)
+    await setCPAMMContract(contractCPAMM)
   }
 
   async function tokenBalance() {
@@ -58,17 +60,15 @@ function App() {
     const token1 = new ethers.Contract(token1Address, erc20Json.abi, signer)
     setToken1(token1)
     const token1Bal = await token1.balanceOf(walletAddress)
-    const token1Balance = ethers.utils.formatEther(token1Bal)
-    const balanceWithoutDecimals1 = parseFloat(token1Balance).toFixed(0)
-    settoken1Balance(balanceWithoutDecimals1)
+    const token1Balance = ethers.utils.formatUnits(token1Bal,0)
+    settoken1Balance(token1Balance)
     
     //Token2
     const token2 = new ethers.Contract(token2Address, erc20Json.abi, signer)
     setToken2(token2)
     const token2Bal = await token2.balanceOf(walletAddress)
-    const token2Balance = ethers.utils.formatEther(token2Bal)
-    const balanceWithoutDecimals2 = parseFloat(token2Balance).toFixed(0)
-    settoken2Balance(balanceWithoutDecimals2)
+    const token2Balance = ethers.utils.formatUnits(token2Bal,0)
+    settoken2Balance(token2Balance)
   }
 
   
@@ -81,8 +81,8 @@ function App() {
   }
   async function mintToken1() {
     const token1Mint =new ethers.Contract(token1Address,mintableJson.abi, signer)
-    const inputMint1InWei = ethers.utils.parseUnits(inputMint1);
-    await token1Mint.mint(walletAddress, inputMint1InWei);
+    const inputMint1Format = ethers.utils.parseUnits(inputMint1,0);
+    await token1Mint.mint(walletAddress, inputMint1Format);
   }
 
   //Mint token2
@@ -94,28 +94,32 @@ function App() {
   }
   async function mintToken2() {
     const token2Mint =new ethers.Contract(token2Address,mintableJson.abi, signer)
-    const inputMint2InWei = ethers.utils.parseUnits(inputMint2);
-    await token2Mint.mint(walletAddress, inputMint2InWei);
+    const inputMint2Format = ethers.utils.parseUnits(inputMint2,0);
+    await token2Mint.mint(walletAddress, inputMint2Format);
   }
 
 
   //Add liquidity
-  function InputAddLiq1(event) {
-    setLiq1(event.target.value);
-  }
+  // function InputAddLiq1(event) {
+  //   setLiq1(event.target.value);
+  // }
+  // function InputAddLiq2(event) {
+  //   setLiq2(event.target.value);
+  // }
+  // function submitAddLiq(event) {
+  //   event.preventDefault();
+  //   addLiquid();
+  // }
 
-  function InputAddLiq2(event) {
-    setLiq2(event.target.value);
-  }
-
-  function submitAddLiq(event) {
-    event.preventDefault();
-    addLiquidty();
-  }
-
-  function addLiquidty() {
+  // async function addLiquid() {
+  //   const liq1Format = ethers.utils.parseUnits(liq1);
+  //   const liq2Format = ethers.utils.parseUnits(liq2);
+  //   await token1.approve(contractCPAMMAdd,liq1Format)
+  //   await token2.approve(contractCPAMMAdd,liq2Format)
+  //   await CPAMMContract.addLiquidity(liq1Format,liq2Format)
     
-  }
+
+  // }
   
   
 
@@ -144,7 +148,7 @@ function App() {
         <h4>TK2 Balance: {token2Balance}</h4>
       </div>
       
-      <div className='addLiq'> 
+      {/* <div className='addLiq'> 
           <h3>Add Liquidity</h3>
           <form onSubmit={submitAddLiq}>
             <h4>Token1 Amount:</h4>
@@ -157,7 +161,7 @@ function App() {
           
           <button type="submit">Submit</button>
           </form>
-      </div>
+      </div> */}
       
     </div>
   );
