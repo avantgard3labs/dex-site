@@ -34,6 +34,8 @@ function App() {
   const [swap2, setSwap2] = useState('');
   //RemoveLiquidity
   const [removeLiq,setRemoveLiq] = useState('');
+  //Shares
+  const [shares, setShares] = useState('')
 
 
 
@@ -102,6 +104,12 @@ function App() {
     await token2Mint.mint(walletAddress, inputMint2Format);
   }
 
+  //sharesHeld
+  async function sharesHeld() {
+    const shares_held = await CPAMMContract.sharesHeld(walletAddress)
+    const sharesbal = ethers.utils.formatUnits(shares_held,0)
+    setShares(sharesbal)
+  }
 
   // Add liquidity
   function InputAddLiq1(event) {
@@ -184,6 +192,12 @@ function App() {
         <h3>The current token balance in your account are:</h3>
         <h4>TK1 Balance: {token1Balance}</h4>
         <h4>TK2 Balance: {token2Balance}</h4>
+      </div>
+
+      <div className='shares'> 
+        <button onClick={sharesHeld}>Share Balance</button>
+        <h3>Shares held in Dex:</h3>
+        <h4>{shares}</h4>
       </div>
       
       <div className='addLiq'> 
